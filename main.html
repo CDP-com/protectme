@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- ************************************************ -->
+<!-- START: Necessary Meta - DO NOT EDIT THIS SECTION -->
+<!-- ************************************************ -->
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<meta http-equiv="x-ua-compatible" content="ie=Edge">
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="Expires" CONTENT="100">
+<meta name="robots" content="noindex,nofollow,noarchive,noodp,noimageindex,nomediaindex" />
+<!-- ************************************************ -->
+<!--                 END: Necessary Meta              -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!-- START: Common Scripts - DO NOT EDIT THIS SECTION -->
+<!-- ************************************************ -->
+<script type="text/javascript" src="../common/template/common-scripts.js"></script>
+<!-- ************************************************ -->
+<!--                END: Common Scripts               -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!--             START: App Specific Files            -->
+<!--        Add Any of Your Custom Javascript,        --> 
+<!--   Custom CSS, and Other App Specific Files Here  -->
+<!-- ************************************************ -->  
+<link rel="stylesheet" type="text/css" media="all" href="app-style.css"/>  
+<script type="text/javascript" src="app-lib.js"></script>
+<!-- ************************************************ -->  
+<!--               END: App Script Files              -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!--        START: App Title - DO NOT EDIT THIS SECTION      -->
+<!-- ************************************************ -->
+<script type="text/javascript">
+document.title = apptitle + " | SnapBack Apps";
+</script>
+<!-- ************************************************ -->
+<!--                  END: App Title                  -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!--START: Required Scripts - DO NOT EDIT THIS SECTION-->
+<!-- ************************************************ -->
+<script type="text/javascript">
+	// Include package JS file after deployment
+	CreateAppJSFile();
+</script>
+<script type="text/javascript">
+	// Temporary Solution to Setting the Initial Permissions
+	var ManifestURL_Local = "%ALLUSERSPROFILE%\\cdp\\snapback\\apps\\apptemplate\\apptemplate.xml";
+	// Check to see if User is admin 
+	
+	// globals
+	var EnableButtonLMD=0;
+	var EnableButtonCurrent=0;
+    var curEnableButton=0;
+	var lastModDatebtn=0;
+    var defEnableBtn=0;
+	var AllowUserLMD=0;
+	var CurUserbtn="";
+	var CurrentUser=0;
+	var CautionLMD=0
+	var defcurCautionbtn=0;
+	var curCautionbtn=0;
+	var curCaution=0;
+	var defUserBtn="";
+	
+	// My Variables
+	var oTest = new ActiveXObject("wscript.shell");
+	DName = oTest.ExpandEnvironmentStrings("%COMPUTERNAME%") 
+	UName = oTest.ExpandEnvironmentStrings("%USERNAME%") 
+	var regBool=false;
+	var regNum=0;
+	var regString=null;
+	
+	// Initialize Global Permissions for Current User
+	InitializePermissions();    // needed because Install is not aware of all users and future users
+	var i=0;
+	    //Read App Registry Button Permissions 
+		curEnableButton="btn"+i+"_CurrentEnableButton"; // setup local variable name for button number	
+        var AppRoot = "HKEY_LOCAL_MACHINE\\SOFTWARE\\CDP\\SnapBack\\Apps\\";
+	    var RegPath = AppRoot + appname + "\\button" + i + "\\CurrentEnableButton";
+		//alert("for button: "+i+"   RegPath="+RegPath);
+		regBool = fnRegExists(RegPath);
+			if (regBool==false)
+			{
+				// runService to initialize registry for app 
+				// comment out for development and load your initial perms via a .reg file
+				// comment out if you have no buttons
+				runService(ManifestURL_Local,"","perms");
+			}
+			else
+			{
+				// read in data
+				//loop through number of buttons set by author
+	            for (i=0; i<btncount; i++)
+				{
+				try {
+					// this is to test to see if any enable button changes has been made 
+					EnableButtonLMD = GetButtonIniValue(appname, i, "EnableButtonLastModifiedDate");
+					lastModDatebtn="btn"+i+"_EnableButtonLastModified";
+					//setbtnValue(lastModDate,EnableButtonLMD);   // set local global value to registry entry
+					curEnableButton="btn"+i+"_CurrentEnableButton"; // setup local variable name for button number		
+					EnableButtonCurrent = GetButtonIniValue(appname,i,"CurrentEnableButton");  // Admin changed current value so get it
+					curEnableButton=eval(EnableButtonCurrent);  // set local global value to registry entry
+				} catch (e) {
+					// there is no enablebutton date so just get the value there
+					curEnableButton="btn"+i+"_CurrentEnableButton"; // setup local variable name for button number		
+					EnableButtonCurrent = GetButtonIniValue(appname,i,"CurrentEnableButton");  // Admin changed current value so get it
+					curEnableButton=eval(EnableButtonCurrent);  // set local global value to registry entry
+				}
+				try {
+					// see if admin change Normal User Flag
+					AllowUserLMD = GetButtonIniValue(appname,i,"AllowUserLastModifiedDate");
+					lastModDate="btn"+i+"_AllowUserLastModifiedDate";
+					//lastModDate,eval(AllowUserLMD);
+					currentUser= GetButtonIniValue(appname,i,"CurrentAllowUser");
+					curUserbtn="btn"+i+"_CurrentAllowUser";
+					CurUserbtn=eval(currentUser);
+				} catch (e) {
+				// Normal User has not been set by Admin  so just get allow user
+					currentUser= GetButtonIniValue(appname,i,"CurrentAllowUser");
+					curUserbtn="btn"+i+"_CurrentAllowUser";
+					CurUserbtn=eval(currentUser);
+				}
+				try {
+					// Check if admin modified caution flag for this button
+					CautionLMD = GetButtonIniValue(appname,i,"CautionLastModifiedDate");
+					lastModDate="btn"+i+"_CautionLastModifiedDate";
+					//setbtnValue(lastModDate,CautionLMD);
+					curCautionbtn="btn"+i+"_CurrentCaution";
+					curCaution= GetButtonIniValue(appname, i, "CurrentCaution"); 
+					//setbtnValue(curCautionbtn,curCaution);
+				}catch(e)
+				{
+	   				curCautionbtn="btn"+i+"_CurrentCaution";
+					curCaution= GetButtonIniValue(appname, i, "CurrentCaution"); 
+				} 
+	} // end loop through buttons
+			}
+	//DONT need to read in registry values as we get them when we need them
+</script>
+<script type="text/javascript" src="../common/scripts/onlinecheck.js"></script>
+<!-- ************************************************ -->
+<!--               END: Required Scripts              -->
+<!-- ************************************************ -->
+</head>
+<body>
+
+
+
+
+
+<!-- ************************************************ -->
+<!--  START: Left Sidebar - DO NOT EDIT THIS SECTION  -->
+<!-- ************************************************ -->
+
+<script type="text/javascript">CreateSidebar1();</script>
+
+	<script type="text/javascript">
+		var nodeURL = getRelativeURL();
+			loadTree('treemenu01', 'menu01', nodeURL, menu01);
+	</script>
+
+<script type="text/javascript">CreateSidebar2();</script>
+
+<!-- ************************************************ -->
+<!--                 END: Left Sidebar                -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!-- START: Page Content 1 - DO NOT EDIT THIS SECTION -->
+<!-- ************************************************ -->
+<script type="text/javascript">CreatePageContent1();</script>
+<!-- ************************************************ -->
+<!--               END: Page Content 1                -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!--     START: Page Tabs - Add More If Necessary     -->
+<!-- ************************************************ -->
+	<ul class="tabs">
+		<li><a href="#tab1" title="Run this App from Here">App Home</a></li>
+		<li><a href="#tab2" title="The technical details of what this App does">How it Works</a></li>
+		<li><a href="#tab3" title="This App is free to Use">Pricing</a></li>
+		<li><a href="#tab4" title="Record of Each Committee's work and report to users">What's Certified</a></li>
+	</ul>
+<!-- ************************************************ -->
+<!--                 END: Page Tabs                   -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!-- START: Page Content 2 - DO NOT EDIT THIS SECTION -->
+<!-- ************************************************ -->
+<script type="text/javascript">CreatePageContent2();</script>
+<!-- ************************************************ -->
+<!--               END: Page Content 2                -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!--   START: Page Tab Content - Edit this Section    -->
+<!-- ************************************************ -->    				
+	<div id="tab1">
+
+		<h2>Quickly & Securely Protect Your Data</h2>
+		<p>Protecting your data: it's something we all know is essential yet something many of neglect to set up.  Studies show that many us fail to take advantage of some basic, built-in data protection programs which can help when needed.  This app is designed to ensure that these basic backup and data protection components are turned on as well optimized to ensure you get the most value without compromising your PC's resources.</p>
+		
+		<p>Preventing loss of your PC use and your files should have been automatic and free, but are unfortunately turned off by default.  Spend just a minute to protect yourself now, and just push SnapBack "Protect Me" button for a level of peace of mind.</p>
+		
+		
+		<script type="text/javascript">CheckProtectionStatus();</script>
+		<!-- ************************************************ -->
+		<!--  START: Button Table - DO NOT EDIT THIS SECTION  -->
+		<!-- ************************************************ -->	
+		<script type="text/javascript">CreateButtonRunTable();</script>
+		<!-- ************************************************ -->
+		<!--                 END: Button Table                -->
+		<!-- ************************************************ -->
+				
+		<h3>What are Snapshots?</h3>
+		<div class='more'>
+			Snapshots are the fastest, easiest, and most reliable way to protect most problems you'll have if you deleted any file, or if RansomWare has encrypted any of your files.  SnapBack takes a snapshot every day (or every hour if you want), giving you over 512 copies of your hard drive from different times in the past. These copies are all kept on your hard drive so they are always available when needed.  In addition to turning Snapshots on, SnapBack increases the number of past Snapshots kept from 64 to 512 and adjusts the protection space on your hard drive.  SnapBack configures snapshots to use SSD drives properly, and to optionally skip some folders such as movies.  Furthermore, SnapBack provides easy access to past snapshots using Windows Explorer.  Snapshots are taken and available in all versions of Windows 7, 8, 10, and server, as well as pro versions of Vista. 
+		</div>
+		<br />
+		<h3>What is File History</h3>
+		<div class='more'>
+			File History in Windows 8 and 10 will be turned on and any file changes in any of your common folders in Libraries, such as My Documents, Music, etc. will be copied to a backup area of your existing hard drive immediately.  Further fine tuning can be done later in SnapBack to add folders, skip folders, reclaim space, and preferably move another copy of your history to an external drive.  File recovery can be used through the native Windows app, where you can either move through time, or even do a word search through all your past file versions.  SnapBack will also provide additional search and recovery options.
+		</div>
+		<br />
+		<h3>Additional Backup/Protection Measures</h3>
+		<p>In addition to the basics such as turning on snapshots and File History, there are number of measures you can take to ensure that your data is fully protected from unforseen catastrophes.  Below are some options we recommend you take and, in the future, hope to automate to better protect you. <a class="viewmore" href="#" rel="#viewmore_1">View More</a></p>
+		<div id="viewmore_1" class="viewmorediv" style="display: none; margin-left: 25px;">
+			<strong>Image Backup</strong><br />
+			<p>Image Backup is great to quickly get up and running if your hard drive stops working, or if you must replace your PC.  Unknown to most, it is built into Windows if you know how to find and use it.
+				<ul>
+					<li>The advantages: everything, all programs, settings, and all your data is restored exactly as it was, at that time.</li>   
+					<li>The disadvantages: each image will require enough external hard drive space to hold the compressed contents of all your files, so you will likely not keep more than one or two backup copies.  It will likely take an hour or more to complete an image backup, so you won't do it very often.</li>
+				</ul>
+			</p>
+			<strong>File Backup</strong><br />
+			<p>File Backup is built into all versions of Windows.  On a scheduled basis, any files or folders can be sent to a set place on your hard drive, or more often, to an external drive or network storage.  Multiple versions of files that changed are also saved.</p>
+			<strong>Synchronization with Cloud Storage</strong><br />
+			<p>Synchronization and Cloud File Storage has become more and more prevalent, but confusing, unreliable, and sometimes unnecessarily expensive.  Without a considerable amount of expertise, and careful monitoring, you can easily think you are protected when you aren't.  Regardless, we recommend you at least look into backing up your files with cloud storage.  This will help ensure you remain protected in the event catastrophic hardware loss.</p>
+		</div>
+			
+	</div><!--End Tab1-->
+	
+	<div id="tab2">
+	
+		<!-- ************************************************************ -->
+		<!--  START: Button Permissions Table - DO NOT EDIT THIS SECTION  -->
+		<!-- ************************************************************ -->	
+		<div id="AdminPerms">
+			<script type="text/javascript">CreateButtonAdminTable();</script>
+		</div>
+		<!-- ************************************************************ -->
+		<!--                 END: Button Permissions Table                -->
+		<!-- ************************************************************ -->
+
+		
+		
+		
+		<!-- ************************************************************************ -->
+		<!--           Below is the standard technical details instructions           -->
+		<!-- Remove and include your app's individual technical details in plain HTML -->
+		<!-- ************************************************************************ -->
+		<h3>Details About the "Protect Me" Button</h3>
+		<p>This button simultaneously runs the "Schedule Automatic Snapshots" and "Turn on File History" buttons, ensuring you have the most basic data protection built-in to windows</p>
+		
+		<h3>Details About the "Schedule Automatic Snapshots" Button</h3>
+		<p>A snapshot is a copy of your system at a given point in time.  This button turns on the capability of snapshots built-in to all versions of Windows.  This button, further, schedules a snapshot to occur everyday at noon so long as your system is running.</p>
+		
+		<h3>Details About the "Turn on File History" Button</h3>
+		<p>This button will turn on File History, available to those users running Windows 8 & 10.  File History automatically creates incremental backups of files in particular areas of your machine.</p>
+		
+		<!-- ******************************************************* -->
+		<!--  START: Source Code Display - DO NOT EDIT THIS SECTION  -->
+		<!-- ******************************************************* -->	
+		<script type="text/javascript">CreateSrcCodeIframes();</script>
+		<!-- ******************************************************* -->
+		<!--                END: Source Code Display                 -->
+		<!-- ******************************************************* -->
+	
+	</div><!--End Tab2-->
+	
+	<div id="tab3">
+		  
+		<!-- ********************************************************************************* -->
+		<!--                    Below is the standard app pricing information                  -->
+		<!-- Remove and include your app's individual pricing details in platin HTML if needed -->
+		<!-- ********************************************************************************* -->
+		<script type="text/javascript">CreateStandardPricing();</script>
+		
+		
+		
+	</div><!--End Tab3-->
+						
+	<div id="tab4">
+			
+		<!-- ******************************************************************** -->
+		<!--            Below is the standard certification information           -->
+		<!--            Do not remove or otherwise modify this section            -->
+		<!-- ******************************************************************** -->
+		<script type="text/javascript">CreateStandardCertification();</script>
+		
+		
+		
+	</div><!--End Tab4-->
+<!-- ************************************************ -->
+<!--              End: Page Tab Content               -->
+<!-- ************************************************ -->   	
+
+
+
+
+
+
+
+<!-- ************************************************ -->
+<!--      START: Footer - DO NOT EDIT THIS SECTION    -->
+<!-- ************************************************ -->
+<script type="text/javascript">CreateFooter();</script>
+<!-- ************************************************ -->
+<!--                    END: Footer                   -->
+<!-- ************************************************ -->
+
+
+
+
+
+<!-- ************************************************ -->
+<!-- START: Required Web Page Logic close of body tag -->
+<!--             DO NOT EDIT THIS SECTION             -->
+<!-- ************************************************ -->
+<script type="text/javascript">
+   var nCDPButtons = btncount;  // Number of buttons for page set by applib.js.
+   // Global array of button objects inheriting from CDPButton class
+   var oButtonsArray = [];
+   oButtonsArray.length = nCDPButtons;  //Number of buttons for page. Array elements start with zero, so 3 buttons have elements 0 - 2.
+</script>
+<script type="text/javascript" src="../common/scripts/cdp-uri.js"></script>
+<script type="text/javascript">
+   <!--
+   // Globals used by ../common/webpagelogic.js
+   var PackageName = appname;  // Package name set by applib.js
+
+	// DEVELOPER NOTE: Next value can be set, but is optional
+   var DemoPageName = "";	// Leave this blank or use an independent html file.
+   
+   var LivePageName = "main.html";
+   
+   var ButtonCount = oButtonsArray.length;
+   var oWPLogic;
+   /* Next initialization is the function name in [packagename]lib.js that runs when the "?run=1" parameter is included in the url */
+   var RunableFunction = "runapp()";
+   loadScript("../common/scripts/webpagelogic.js", function()
+   {
+      // Initialization code for instantiation of web page object
+      oWPLogic = new Webpage(PackageName, DemoPageName, LivePageName, ButtonCount);    //Function in ../common/webpagelogic.js
+      
+      snAppPage(oWPLogic);
+//      oWPLogic.isLocal = false;   //Uncomment this line to force online behavior
+
+      if (oWPLogic.isLocal)
+      {
+         /* No code here right now. */
+      }
+      else
+      {
+         /* Set oWPLogic properties from cdpbutton# divs */
+         fnGetAttributes(oWPLogic);
+         fnMakeCdpButtons(oWPLogic);
+      }
+   });
+   // -->
+</script>
+<!-- ********************************************** -->
+<!-- END: Required Web Page Logic close of body tag -->
+<!-- ********************************************** -->
+
+
+
+
+
+</body>
+</html> 
+
