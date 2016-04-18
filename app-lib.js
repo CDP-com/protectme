@@ -1,6 +1,6 @@
 //***** Use this file to set up your buttons and include any custom functions for your app *****
 // 
-var development = 1;						// 1 this app is in development, 0 this app is in production
+var development = 0;						// 1 this app is in development, 0 this app is in production
 //var currentUserDefaultCaution = "0";		// **This is the global Throw caution to the wind flag for the current use
 
 /*-----------------------------------------------------*/
@@ -49,7 +49,12 @@ var btn0_ServiceName="";                    // A unique name if using the servic
 var btn0_ElevateNeeded=0;                  	// Does this button need elevation? Needed by service in xml file for button
 var btn0_ScriptHasUI=0;                    	// Does the script have an UI? Needed by service in xml file for button
 
-
+// Run Button Function
+// This runs your button when it is clicked
+// Add any functions or calls you wish to make before or after the primary "RunApps" function
+function RunBtn0( AppName, ButtonNum, Computername, CurrentUser, sCmd ){
+	RunApps( AppName, ButtonNum, Computername, CurrentUser, sCmd );		//This function executes your script.  Do not edit this line
+}
 
 
 
@@ -84,7 +89,12 @@ var btn1_ServiceName="";                    // A unique name if using the servic
 var btn1_ElevateNeeded=0;                  	// Does this button need elevation? Needed by service in xml file for button
 var btn1_ScriptHasUI=0;                    	// Does the script have an UI? Needed by service in xml file for button
 
-
+// Run Button Function
+// This runs your button when it is clicked
+// Add any functions or calls you wish to make before or after the primary "RunApps" function
+function RunBtn1( AppName, ButtonNum, Computername, CurrentUser, sCmd ){
+	RunApps( AppName, ButtonNum, Computername, CurrentUser, sCmd );		//This function executes your script.  Do not edit this line
+}
 
 
 
@@ -119,6 +129,12 @@ var btn2_ServiceName="";                    // A unique name if using the servic
 var btn2_ElevateNeeded=0;                  	// Does this button need elevation? Needed by service in xml file for button
 var btn2_ScriptHasUI=0;                    	// Does the script have an UI? Needed by service in xml file for button
 
+// Run Button Function
+// This runs your button when it is clicked
+// Add any functions or calls you wish to make before or after the primary "RunApps" function
+function RunBtn2( AppName, ButtonNum, Computername, CurrentUser, sCmd ){
+	RunApps( AppName, ButtonNum, Computername, CurrentUser, sCmd );		//This function executes your script.  Do not edit this line
+}
 
 
 
